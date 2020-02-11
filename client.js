@@ -2,16 +2,17 @@
 const net = require('net');
 const stream = require('stream');
 const fs = require('fs');
-const crypto = require('crypto');
 
 const port = 8124;
 const firstRequestStr = 'REMOTE';
 const successReq = 'ASC';
 const failedReq = 'DEC';
 const copyReq = 'COPY';
+const encodeReq = 'ENCODE';
 
 const originalAddr = process.argv[2];
 const copyAddr = process.argv[3];
+const key = '68597j58r9t8kb';
 
 const client = new net.Socket();
 
@@ -35,6 +36,10 @@ client.on('data', function(data) {
     client.destroy();
   }else if ( (data == copyReq) && (client.RequestNumber > 1) ){
     console.log(data);
+    client.write(`ENCODE ${originalAddr} ${copyAddr} ${key}`);
+  }else if ( (data == encodeReq) && (client.RequestNumber > 1) ){
+    console.log(data);
+    client.destroy();
   }
 });
 

@@ -3,13 +3,13 @@ const net = require('net');
 const stream = require('stream');
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
 
 const port = 8124;
 const firstRequestStr = 'REMOTE';
 const successReq = 'ASC';
 const failedReq = 'DEC';
 const copyReq = 'COPY';
+const encodeReq = 'ENCODE';
 
 let seed = 3106;
 
@@ -35,7 +35,11 @@ const server = net.createServer((client) => {
       console.log(data);
       copyFile(params[1], params[2], `${Date.now()}.dat`);
       client.write(copyReq);
-    }
+    }else if ( (params[0] == encodeReq) && (client.RequestNumber > 1) ){
+    console.log(data);
+    copyFileEncode(params[1], params[2], `${Date.now()}.dat`, params[3]);
+    client.write(encodeReq);
+  }
   });
 
   client.on('end', () => console.log('Client disconnected'));
@@ -51,6 +55,20 @@ function copyFile(filename, src, newfilename){
 
   readStream.on('data', function (chunk) {
     writeFile(src, newfilename, chunk);
+  });
+
+  readStream.on('error', function(err) {
+    console.log('Failed readFile');
+  });
+}
+
+function copyFileEncode(filename, src, newfilename, key){
+  let readStream = fs.createReadStream(filename);
+  let res;
+
+  readStream.on('data', function (chunk) {
+    let encode = chunk.toString('base64');
+    writeFile(src, newfilename, encode);
   });
 
   readStream.on('error', function(err) {
