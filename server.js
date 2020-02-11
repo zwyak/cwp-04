@@ -2,6 +2,8 @@
 const net = require('net');
 const stream = require('stream');
 const fs = require('fs');
+const crypto = require('crypto');
+
 const port = 8124;
 const firstRequestStr = 'REMOTE';
 const successReq = 'ASC';
