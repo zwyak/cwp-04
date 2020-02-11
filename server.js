@@ -20,10 +20,12 @@ const server = net.createServer((client) => {
 
   client.on('data', (data) => {
     client.RequestNumber = client.RequestNumber + 1;
-    if ( (data == firstRequestStr) && (client.RequestNumber == 1) ){
+    let params = data.split(' ');
+
+    if ( (params[0] == firstRequestStr) && (client.RequestNumber == 1) ){
       console.log(data);
       client.write(successReq);
-    }else if ( (data != firstRequestStr) && (client.RequestNumber == 1) ){
+    }else if ( (params[0] != firstRequestStr) && (client.RequestNumber == 1) ){
       console.log(data);
       client.write(failedReq);
       client.destroy();

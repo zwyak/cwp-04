@@ -9,6 +9,9 @@ const firstRequestStr = 'REMOTE';
 const successReq = 'ASC';
 const failedReq = 'DEC';
 
+const originalAddr = process.argv[2];
+const copyAddr = process.argv[3];
+
 const client = new net.Socket();
 
 client.setEncoding('utf8');
@@ -22,13 +25,15 @@ client.connect(port, function() {
 client.on('data', function(data) {
   client.RequestNumber = client.RequestNumber + 1;
   if ( (data == successReq) && (client.RequestNumber == 1) ){
-
+    if (fs.existsSync(originalAddr) && fs.existsSync(copyAddr)){
+      console.log(data);
+      client.write(`COPY ${originalAddr} ${copyAddr}`);
     }
   }else if ( (data != successReq) && (client.RequestNumber == 1) ){
     console.log(data);
     client.destroy();
   }else{
-
+    console.log(data);
   }
 });
 
