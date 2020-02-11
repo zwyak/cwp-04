@@ -1,10 +1,10 @@
 // client.js
 const net = require('net');
+const stream = require('stream');
 const port = 8124;
 const firstRequestStr = 'REMOTE';
 const successReq = 'ASC';
 const failedReq = 'DEC';
-
 
 const client = new net.Socket();
 
@@ -25,7 +25,7 @@ client.on('data', function(data) {
     console.log(data);
     client.destroy();
   }else{
-    
+
   }
 });
 

@@ -1,6 +1,10 @@
 // server.js
 const net = require('net');
+const stream = require('stream');
 const port = 8124;
+const firstRequestStr = 'REMOTE';
+const successReq = 'ASC';
+const failedReq = 'DEC';
 
 let seed = 3106;
 
