@@ -2,12 +2,14 @@
 const net = require('net');
 const stream = require('stream');
 const fs = require('fs');
+const path = require('path');
 const crypto = require('crypto');
 
 const port = 8124;
 const firstRequestStr = 'REMOTE';
 const successReq = 'ASC';
 const failedReq = 'DEC';
+const copyReq = 'COPY';
 
 let seed = 3106;
 
@@ -29,8 +31,10 @@ const server = net.createServer((client) => {
       console.log(data);
       client.write(failedReq);
       client.destroy();
-    }else{
+    }else if ( (params[0] == copyReq) && (client.RequestNumber > 1) ){
       console.log(data);
+      copyFile(params[1], params[2], `${Date.now()}.dat`);
+      client.write(copyReq);
     }
   });
 
@@ -40,3 +44,21 @@ const server = net.createServer((client) => {
 server.listen(port, () => {
   console.log(`Server listening on localhost:${port}`);
 });
+
+function copyFile(filename, src, newfilename){
+  let readStream = fs.createReadStream(filename);
+  let res;
+
+  readStream.on('data', function (chunk) {
+    writeFile(src, newfilename, chunk);
+  });
+
+  readStream.on('error', function(err) {
+    console.log('Failed readFile');
+  });
+}
+
+function writeFile(src, filename, data){
+  let writeStream = fs.createWriteStream( path.join(src, filename) );
+  writeStream.write(data);
+}

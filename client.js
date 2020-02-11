@@ -8,6 +8,7 @@ const port = 8124;
 const firstRequestStr = 'REMOTE';
 const successReq = 'ASC';
 const failedReq = 'DEC';
+const copyReq = 'COPY';
 
 const originalAddr = process.argv[2];
 const copyAddr = process.argv[3];
@@ -32,7 +33,7 @@ client.on('data', function(data) {
   }else if ( (data != successReq) && (client.RequestNumber == 1) ){
     console.log(data);
     client.destroy();
-  }else{
+  }else if ( (data == copyReq) && (client.RequestNumber > 1) ){
     console.log(data);
   }
 });
